@@ -10,7 +10,8 @@ export const SocketProvider = ({ children }) => {
 
     useEffect(() => {
         if (user) {
-            const newSocket = io("http://localhost:5001", {
+            const socketUrl = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5001/api").replace("/api", "");
+            const newSocket = io(socketUrl, {
                 query: { userId: user.id }
             });
 

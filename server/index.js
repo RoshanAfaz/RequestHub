@@ -66,6 +66,15 @@ mongoose
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
+// Health Check
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "online",
+    database: mongoose.connection.readyState === 1 ? "connected" : "disconnected",
+    timestamp: new Date()
+  });
+});
+
 // Basic Route
 app.get("/", (req, res) => {
   res.send("Request Management System API is running...");

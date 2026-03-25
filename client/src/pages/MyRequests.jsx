@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import api from "../utils/api";
-import { FileText, Paperclip, Clock } from "lucide-react";
+import { FileText, Clock, XCircle, Search, Eye } from "lucide-react";
 import { motion } from "framer-motion";
 
 const MyRequests = () => {
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedRequest, setSelectedRequest] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchRequests = async () => {
@@ -42,8 +44,8 @@ const MyRequests = () => {
                             <th className="px-6 py-5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">Request Details</th>
                             <th className="px-6 py-5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">Category</th>
                             <th className="px-6 py-5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">Deadline</th>
-                            <th className="px-6 py-5 text-center text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">Docs</th>
                             <th className="px-6 py-5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">Status</th>
+                            <th className="px-6 py-5 text-center text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">View</th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-slate-50">
@@ -62,15 +64,6 @@ const MyRequests = () => {
                                         <span className="text-sm font-medium">{new Date(req.dueDate).toLocaleDateString()}</span>
                                     </div>
                                 </td>
-                                <td className="px-6 py-5 whitespace-nowrap text-center">
-                                    {req.attachment ? (
-                                        <a href={`http://localhost:5001${req.attachment}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-300">
-                                            <Paperclip size={16} />
-                                        </a>
-                                    ) : (
-                                        <span className="text-slate-300">-</span>
-                                    )}
-                                </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`badge ${req.status === 'approved' ? 'badge-success' :
                                         req.status === 'rejected' ? 'badge-danger' :
@@ -79,6 +72,15 @@ const MyRequests = () => {
                                         }`}>
                                         {req.status}
                                     </span>
+                                </td>
+                                <td className="px-6 py-5 whitespace-nowrap text-center text-sm">
+                                    <button 
+                                        onClick={() => { setSelectedRequest(req); setIsModalOpen(true); }}
+                                        className="p-2 text-primary hover:bg-primary/5 rounded-lg transition-colors"
+                                        title="View Details"
+                                    >
+                                        <Eye size={18} strokeWidth={2.5} />
+                                    </button>
                                 </td>
                             </tr>
                         ))}
@@ -95,6 +97,74 @@ const MyRequests = () => {
                     </tbody>
                 </table>
             </div>
+
+            {/* View Details Modal */}
+            {isModalOpen && selectedRequest && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-300">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        className="bg-white rounded-[2rem] shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-100"
+                    >
+                        {/* Header */}
+                        <div className="bg-slate-50 p-8 border-b border-slate-100 flex justify-between items-start">
+                            <div>
+                                <div className="flex items-center gap-3 mb-2">
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Request Details</span>
+                                    <span className={`badge ${selectedRequest.status === 'approved' ? 'badge-success' :
+                                        selectedRequest.status === 'rejected' ? 'badge-danger' :
+                                            selectedRequest.status === 'in-review' ? 'badge-info' :
+                                                'badge-warning'
+                                        }`}>
+                                        {selectedRequest.status}
+                                    </span>
+                                </div>
+                                <h2 className="text-3xl font-black font-display text-slate-900 leading-tight">{selectedRequest.title}</h2>
+                            </div>
+                            <button onClick={() => setIsModalOpen(false)} className="p-3 hover:bg-slate-200/50 rounded-full transition-colors text-slate-400 hover:text-slate-600">
+                                <XCircle size={24} />
+                            </button>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-8 space-y-8 max-h-[60vh] overflow-y-auto">
+                            <div className="grid grid-cols-2 gap-8">
+                                <div>
+                                    <p className="label">Category</p>
+                                    <span className="text-[11px] font-black text-primary border border-primary/10 bg-primary/5 px-2 py-0.5 rounded-md uppercase tracking-wider">
+                                        {selectedRequest.type}
+                                    </span>
+                                </div>
+                                <div>
+                                    <p className="label">Deadline</p>
+                                    <div className="flex items-center gap-2 text-slate-500">
+                                        <Clock size={16} className="text-slate-300" />
+                                        <span className="text-sm font-bold text-slate-800">{new Date(selectedRequest.dueDate).toLocaleDateString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Description */}
+                            <div>
+                                <p className="label">Detailed Description</p>
+                                <div className="bg-slate-50/50 rounded-2xl p-6 border border-slate-100 italic text-slate-600 leading-relaxed font-medium">
+                                    "{selectedRequest.description}"
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="p-8 bg-slate-50 border-t border-slate-100 flex justify-end">
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="btn btn-primary"
+                            >
+                                Close View
+                            </button>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
         </motion.div>
     );
 };

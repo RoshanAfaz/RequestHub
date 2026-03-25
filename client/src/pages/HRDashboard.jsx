@@ -21,6 +21,9 @@ const HRDashboard = () => {
     const [stats, setStats] = useState({ total: 0, pending: 0, approved: 0, overdue: 0 });
     const [chartData, setChartData] = useState({ statusData: [], deptData: [] });
     const [isMounted, setIsMounted] = useState(false);
+    const [selectedRequest, setSelectedRequest] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [confirmData, setConfirmData] = useState({ isOpen: false, status: "", requestId: "", title: "" });
 
     const departments = ["IT", "HR", "Finance", "Operations", "Sales", "Marketing"];
 
@@ -95,9 +98,19 @@ const HRDashboard = () => {
         fetchRequests();
     };
 
-    const updateStatus = async (id, newStatus) => {
+    const updateStatus = async (id, newStatus, skipConfirm = false) => {
+        // Trigger confirmation for critical statuses if not explicitly skipped
+        if (!skipConfirm && (newStatus === "approved" || newStatus === "rejected")) {
+            const req = requests.find(r => r._id === id);
+            setConfirmData({ isOpen: true, status: newStatus, requestId: id, title: req?.title || "this request" });
+            return;
+        }
+
         try {
             await api.put(`/requests/${id}/status`, { status: newStatus });
+            // Close any open modals/confirmations
+            setConfirmData({ isOpen: false, status: "", requestId: "", title: "" });
+            setIsModalOpen(false);
             // Refresh list
             fetchRequests();
             fetchStats();
@@ -250,7 +263,6 @@ const HRDashboard = () => {
                             <th className="px-6 py-5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">User</th>
                             <th className="px-6 py-5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">Request Details</th>
                             <th className="px-6 py-5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">Due Info</th>
-                            <th className="px-6 py-5 text-center text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">Docs</th>
                             <th className="px-6 py-5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">Status</th>
                             <th className="px-6 py-5 text-center text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">Actions</th>
                         </tr>
@@ -288,15 +300,6 @@ const HRDashboard = () => {
                                             </div>
                                             {isOverdue && <p className="text-[10px] font-black text-red-500 uppercase tracking-tighter mt-1">Overdue Action</p>}
                                         </td>
-                                        <td className="px-6 py-5 whitespace-nowrap text-center">
-                                            {req.attachment ? (
-                                                <a href={`http://localhost:5001${req.attachment}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-300">
-                                                    <Paperclip size={16} />
-                                                </a>
-                                            ) : (
-                                                <span className="text-slate-300">-</span>
-                                            )}
-                                        </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`badge ${req.status === 'approved' ? 'badge-success' :
                                                 req.status === 'rejected' ? 'badge-danger' :
@@ -308,14 +311,14 @@ const HRDashboard = () => {
                                         </td>
                                         <td className="px-6 py-5 whitespace-nowrap text-center">
                                             <div className="flex justify-center gap-1">
+                                                <button onClick={() => { setSelectedRequest(req); setIsModalOpen(true); }} title="View Details" className="p-2 text-primary hover:bg-primary/5 rounded-lg transition-colors">
+                                                    <Eye size={18} strokeWidth={3} />
+                                                </button>
                                                 <button onClick={() => updateStatus(req._id, "approved")} title="Approve" className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors">
                                                     <Check size={18} strokeWidth={3} />
                                                 </button>
                                                 <button onClick={() => updateStatus(req._id, "rejected")} title="Reject" className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
                                                     <X size={18} strokeWidth={3} />
-                                                </button>
-                                                <button onClick={() => updateStatus(req._id, "in-review")} title="Mark In Review" className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                                                    <Eye size={18} strokeWidth={3} />
                                                 </button>
                                             </div>
                                         </td>
@@ -326,6 +329,139 @@ const HRDashboard = () => {
                     </tbody>
                 </table>
             </div>
+
+            {/* View Details Modal */}
+            {isModalOpen && selectedRequest && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-300">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        className="bg-white rounded-[2rem] shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-100"
+                    >
+                        {/* Header */}
+                        <div className="bg-slate-50 p-8 border-b border-slate-100 flex justify-between items-start">
+                            <div>
+                                <div className="flex items-center gap-3 mb-2">
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Request Details</span>
+                                    <span className={`badge ${selectedRequest.status === 'approved' ? 'badge-success' :
+                                        selectedRequest.status === 'rejected' ? 'badge-danger' :
+                                            selectedRequest.status === 'in-review' ? 'badge-info' :
+                                                'badge-warning'
+                                        }`}>
+                                        {selectedRequest.status}
+                                    </span>
+                                </div>
+                                <h2 className="text-3xl font-black font-display text-slate-900 leading-tight">{selectedRequest.title}</h2>
+                            </div>
+                            <button onClick={() => setIsModalOpen(false)} className="p-3 hover:bg-slate-200/50 rounded-full transition-colors text-slate-400 hover:text-slate-600">
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-8 space-y-8 max-h-[60vh] overflow-y-auto">
+                            {/* User Info Section */}
+                            <div className="grid grid-cols-2 gap-8">
+                                <div>
+                                    <p className="label">Submitted By</p>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
+                                            {selectedRequest.submittedBy?.name?.[0]?.toUpperCase() || "U"}
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-slate-800">{selectedRequest.submittedBy?.name}</p>
+                                            <p className="text-xs text-slate-400 font-medium">{selectedRequest.submittedBy?.email}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p className="label">Category & Dept</p>
+                                    <p className="font-bold text-slate-800 uppercase tracking-widest text-xs flex items-center gap-2">
+                                        <span className="text-primary">{selectedRequest.type}</span>
+                                        <span className="text-slate-200">/</span>
+                                        <span className="text-slate-500">{selectedRequest.department || "Unassigned"}</span>
+                                    </p>
+                                    <p className="text-xs text-slate-400 font-medium mt-1 italic">Due: {new Date(selectedRequest.dueDate).toLocaleDateString()}</p>
+                                </div>
+                            </div>
+
+                            {/* Description */}
+                            <div>
+                                <p className="label">Detailed Description</p>
+                                <div className="bg-slate-50/50 rounded-2xl p-6 border border-slate-100 italic text-slate-600 leading-relaxed">
+                                    "{selectedRequest.description}"
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Footer Actions */}
+                        <div className="p-8 bg-slate-50 border-t border-slate-100 flex justify-between gap-4">
+                            <button
+                                onClick={() => { updateStatus(selectedRequest._id, "in-review"); setIsModalOpen(false); }}
+                                className="px-6 py-3 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-100 transition-all text-sm"
+                            >
+                                Mark In-Review
+                            </button>
+                            <div className="flex gap-4 flex-1">
+                                <button
+                                    onClick={() => { updateStatus(selectedRequest._id, "rejected"); setIsModalOpen(false); }}
+                                    className="flex-1 px-6 py-3 bg-red-50 text-red-600 font-bold rounded-xl hover:bg-red-500 hover:text-white transition-all text-sm"
+                                >
+                                    Reject Request
+                                </button>
+                                <button
+                                    onClick={() => { updateStatus(selectedRequest._id, "approved"); setIsModalOpen(false); }}
+                                    className="flex-1 px-6 py-3 bg-emerald-500 text-white font-bold rounded-xl hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 active:scale-95 transition-all text-sm"
+                                >
+                                    Approve Now
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+
+            {/* Confirmation Modal */}
+            {confirmData.isOpen && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 text-center border border-slate-100"
+                    >
+                        <div className={`w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center ${
+                            confirmData.status === 'approved' ? 'bg-emerald-50 text-emerald-500' : 'bg-red-50 text-red-500'
+                        }`}>
+                            {confirmData.status === 'approved' ? <Check size={32} /> : <X size={32} />}
+                        </div>
+                        <h3 className="text-2xl font-black text-slate-800 mb-2 font-display">Are you sure?</h3>
+                        <p className="text-slate-500 mb-8 px-4 leading-relaxed">
+                            You are about to <span className={confirmData.status === 'approved' ? 'text-emerald-500 font-bold' : 'text-red-500 font-bold'}>
+                                {confirmData.status}
+                            </span> the request: <br/> <strong>"{confirmData.title}"</strong>. This action cannot be undone.
+                        </p>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                            <button
+                                onClick={() => setConfirmData({ isOpen: false, status: "", requestId: "", title: "" })}
+                                className="px-6 py-4 bg-slate-50 text-slate-500 font-bold rounded-2xl hover:bg-slate-100 transition-all text-sm"
+                            >
+                                Nevermind
+                            </button>
+                            <button
+                                onClick={() => updateStatus(confirmData.requestId, confirmData.status, true)}
+                                className={`px-6 py-4 text-white font-bold rounded-2xl transition-all text-sm shadow-lg ${
+                                    confirmData.status === 'approved' 
+                                        ? 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20' 
+                                        : 'bg-red-500 hover:bg-red-600 shadow-red-500/20'
+                                }`}
+                            >
+                                Yes, {confirmData.status === 'approved' ? 'Approve' : 'Reject'}
+                            </button>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
         </motion.div>
     );
 };

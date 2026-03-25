@@ -41,134 +41,137 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary-light via-background to-background py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen flex items-center justify-center p-6 bg-white relative overflow-hidden">
+             {/* Dynamic Background */}
+             <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] -mr-64 -mt-32 animate-pulse"></div>
+             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[100px] -ml-64 mb-32"></div>
+
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="max-w-md w-full space-y-8 glass-panel p-10"
+                className="max-w-2xl w-full glass-panel p-10 relative z-10 border border-white/50 shadow-2xl"
             >
-                <div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                        Create your account
+                <div className="text-center mb-10">
+                    <div 
+                        onClick={() => navigate("/")}
+                        className="w-12 h-12 bg-gradient-to-tr from-primary to-accent rounded-2xl mx-auto flex items-center justify-center text-white text-xl font-black shadow-xl cursor-pointer hover:scale-110 active:scale-95 transition-all mb-4"
+                    >R</div>
+                    <h2 className="text-4xl font-black font-display tracking-tight text-slate-800">
+                        Join the <span className="text-primary">Hub</span>.
                     </h2>
-                    <p className="mt-2 text-center text-sm text-gray-600">
-                        Already have an account?{" "}
-                        <span
-                            onClick={() => navigate("/login")}
-                            className="font-medium text-primary hover:text-indigo-500 cursor-pointer transition-colors"
-                        >
-                            Log in
-                        </span>
-                    </p>
+                    <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px] mt-2">Create your professional profile</p>
                 </div>
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    <div className="rounded-md shadow-sm space-y-4">
-                        <div>
-                            <label htmlFor="name" className="label">
-                                Full Name
-                            </label>
-                            <input
-                                id="name"
-                                name="name"
-                                type="text"
-                                required
-                                className="input-field"
-                                value={formData.name}
-                                onChange={handleChange}
-                            />
+
+                <form className="space-y-8" onSubmit={handleSubmit}>
+                    <div className="grid md:grid-cols-2 gap-8">
+                        <div className="space-y-6">
+                            <div>
+                                <label className="label">Full Name</label>
+                                <input
+                                    name="name"
+                                    type="text"
+                                    required
+                                    className="input-field"
+                                    placeholder="John Doe"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div>
+                                <label className="label">Work Email</label>
+                                <input
+                                    name="email"
+                                    type="email"
+                                    required
+                                    className="input-field"
+                                    placeholder="john@organization.com"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div>
+                                <label className="label">New Password</label>
+                                <input
+                                    name="password"
+                                    type="password"
+                                    required
+                                    className="input-field"
+                                    placeholder="••••••••"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                />
+                            </div>
                         </div>
-                        <div>
-                            <label htmlFor="email-address" className="label">
-                                Email address
-                            </label>
-                            <input
-                                id="email-address"
-                                name="email"
-                                type="email"
-                                autoComplete="email"
-                                required
-                                className="input-field"
-                                value={formData.email}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="password" className="label">
-                                Password
-                            </label>
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                required
-                                className="input-field"
-                                value={formData.password}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="department" className="label">
-                                Department
-                            </label>
-                            <select
-                                id="department"
-                                name="department"
-                                required
-                                className="input-field"
-                                value={formData.department}
-                                onChange={handleChange}
-                            >
-                                <option value="">Select Department</option>
-                                {departments.map((dept) => (
-                                    <option key={dept} value={dept}>
-                                        {dept}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="label">Role</label>
-                            <div className="flex gap-4 mt-2">
-                                <label className="inline-flex items-center">
-                                    <input
-                                        type="radio"
-                                        name="role"
-                                        value="user"
-                                        checked={formData.role === "user"}
-                                        onChange={handleChange}
-                                        className="form-radio text-primary focus:ring-primary"
-                                    />
-                                    <span className="ml-2">User</span>
-                                </label>
-                                <label className="inline-flex items-center">
-                                    <input
-                                        type="radio"
-                                        name="role"
-                                        value="hr"
-                                        checked={formData.role === "hr"}
-                                        onChange={handleChange}
-                                        className="form-radio text-primary focus:ring-primary"
-                                    />
-                                    <span className="ml-2">HR</span>
-                                </label>
+
+                        <div className="space-y-6">
+                            <div>
+                                <label className="label">Department</label>
+                                <select
+                                    name="department"
+                                    required
+                                    className="input-field appearance-none cursor-pointer"
+                                    value={formData.department}
+                                    onChange={handleChange}
+                                >
+                                    <option value="">Select Department</option>
+                                    {departments.map((dept) => (
+                                        <option key={dept} value={dept}>{dept}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="label">Account Type</label>
+                                <div className="grid grid-cols-2 gap-4 mt-2">
+                                    <label className={`flex items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.role === 'user' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-100 hover:border-slate-200'}`}>
+                                        <input
+                                            type="radio"
+                                            name="role"
+                                            value="user"
+                                            checked={formData.role === "user"}
+                                            onChange={handleChange}
+                                            className="hidden"
+                                        />
+                                        <span className="font-bold text-sm">Individual</span>
+                                    </label>
+                                    <label className={`flex items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.role === 'hr' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-100 hover:border-slate-200'}`}>
+                                        <input
+                                            type="radio"
+                                            name="role"
+                                            value="hr"
+                                            checked={formData.role === "hr"}
+                                            onChange={handleChange}
+                                            className="hidden"
+                                        />
+                                        <span className="font-bold text-sm">HR Rep</span>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     {error && (
-                        <div className="text-red-500 text-sm text-center">
-                            {error}
+                        <div className="text-red-500 text-xs font-bold text-center bg-red-50 p-4 rounded-xl border border-red-100">
+                            ⚠️ {error}
                         </div>
                     )}
 
-                    <div>
+                    <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
                         <button
                             type="submit"
-                            className="btn btn-primary w-full"
+                            className="btn btn-primary flex-1 w-full sm:w-auto py-4 text-md shadow-xl shadow-primary/20"
                         >
-                            Register
+                            Create Account
                         </button>
+                        <p className="text-sm font-medium text-slate-500">
+                             Have an account?{" "}
+                            <button
+                                type="button"
+                                onClick={() => navigate("/login")}
+                                className="font-black text-primary hover:underline transition-all"
+                            >
+                                Log in
+                            </button>
+                        </p>
                     </div>
                 </form>
             </motion.div>

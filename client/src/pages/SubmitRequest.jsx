@@ -1,7 +1,7 @@
 import { useState } from "react";
 import api from "../utils/api";
 import { useNavigate } from "react-router-dom";
-import { Send, Calendar, FileType, AlignLeft, Paperclip } from "lucide-react";
+import { Send, Calendar, FileType, AlignLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 
@@ -12,7 +12,6 @@ const SubmitRequest = () => {
         type: "",
         description: "",
         dueDate: "",
-        attachment: null
     });
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
@@ -21,10 +20,6 @@ const SubmitRequest = () => {
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleFileChange = (e) => {
-        setFormData({ ...formData, attachment: e.target.files[0] });
     };
 
     const handleSubmit = async (e) => {
@@ -39,16 +34,7 @@ const SubmitRequest = () => {
 
         setLoading(true);
         try {
-            const data = new FormData();
-            data.append("title", formData.title);
-            data.append("type", formData.type);
-            data.append("description", formData.description);
-            data.append("dueDate", formData.dueDate);
-            if (formData.attachment) {
-                data.append("attachment", formData.attachment);
-            }
-
-            await api.post("/requests", data);
+            await api.post("/requests", formData);
 
             toast.success("Request submitted successfully!");
             navigate("/my-requests");
@@ -135,27 +121,6 @@ const SubmitRequest = () => {
                             className="input-field resize-none"
                             placeholder="Provide full context for your request..."
                         ></textarea>
-                    </div>
-
-                    <div>
-                        <label className="label">Supporting Documents</label>
-                        <div className="mt-2 p-6 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 hover:bg-white hover:border-primary/30 transition-all duration-300 group cursor-pointer relative">
-                            <input
-                                type="file"
-                                name="attachment"
-                                onChange={handleFileChange}
-                                className="absolute inset-0 opacity-0 cursor-pointer z-10"
-                            />
-                            <div className="flex flex-col items-center justify-center text-center">
-                                <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-400 group-hover:text-primary transition-colors duration-300 mb-3">
-                                    <Paperclip size={20} />
-                                </div>
-                                <p className="text-sm font-bold text-slate-700">
-                                    {formData.attachment ? formData.attachment.name : "Click or drag to upload"}
-                                </p>
-                                <p className="text-[11px] text-slate-400 font-medium mt-1 uppercase tracking-wider">PDF, PNG, JPG (Max 5MB)</p>
-                            </div>
-                        </div>
                     </div>
 
                     {error && (

@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 import Layout from "./components/Layout";
+import LandingPage from "./pages/LandingPage";
 import MyRequests from "./pages/MyRequests";
 import SubmitRequest from "./pages/SubmitRequest";
 import HRDashboard from "./pages/HRDashboard";
@@ -20,6 +21,7 @@ function App() {
         <Toaster position="top-right" reverseOrder={false} />
         <Router>
           <Routes>
+            <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route element={<Layout />}>

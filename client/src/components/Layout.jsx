@@ -12,6 +12,7 @@ import {
     LogOut,
     Menu,
     X,
+    Shield,
     User as UserIcon
 } from "lucide-react";
 
@@ -204,6 +205,12 @@ const Layout = () => {
             path: "/hr-dashboard",
             icon: <Users size={20} />,
             roles: ["admin", "hr"],
+        },
+        {
+            label: "Admin Panel",
+            path: "/admin-dashboard",
+            icon: <Shield size={20} />,
+            roles: ["admin"],
         },
         {
             label: "Profile",

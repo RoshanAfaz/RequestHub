@@ -85,11 +85,13 @@ const authRoutes = require("./routes/authRoutes");
 const requestRoutes = require("./routes/requestRoutes");
 const n8nRoutes = require("./routes/n8nRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/requests", requestRoutes);
 app.use("/api/n8n", n8nRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Start Server
 server.listen(PORT, () => {

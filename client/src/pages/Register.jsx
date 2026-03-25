@@ -121,29 +121,9 @@ const Register = () => {
                             </div>
                             <div>
                                 <label className="label">Account Type</label>
-                                <div className="grid grid-cols-2 gap-4 mt-2">
-                                    <label className={`flex items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.role === 'user' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-100 hover:border-slate-200'}`}>
-                                        <input
-                                            type="radio"
-                                            name="role"
-                                            value="user"
-                                            checked={formData.role === "user"}
-                                            onChange={handleChange}
-                                            className="hidden"
-                                        />
-                                        <span className="font-bold text-sm">Individual</span>
-                                    </label>
-                                    <label className={`flex items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.role === 'hr' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-100 hover:border-slate-200'}`}>
-                                        <input
-                                            type="radio"
-                                            name="role"
-                                            value="hr"
-                                            checked={formData.role === "hr"}
-                                            onChange={handleChange}
-                                            className="hidden"
-                                        />
-                                        <span className="font-bold text-sm">HR Rep</span>
-                                    </label>
+                                <div className="p-4 rounded-xl border-2 border-primary bg-primary/5 text-primary text-center">
+                                    <span className="font-bold text-sm">Individual Representative</span>
+                                     <p className="text-[10px] uppercase font-black tracking-widest mt-1 opacity-70">Requires Verification</p>
                                 </div>
                             </div>
                         </div>

@@ -13,6 +13,7 @@ import MyRequests from "./pages/MyRequests";
 import SubmitRequest from "./pages/SubmitRequest";
 import HRDashboard from "./pages/HRDashboard";
 import Profile from "./pages/Profile";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   return (
@@ -40,6 +41,11 @@ function App() {
               {/* HR/Admin Routes */}
               <Route element={<ProtectedRoute allowedRoles={["hr", "admin"]} />}>
                 <Route path="/hr-dashboard" element={<HRDashboard />} />
+              </Route>
+
+              {/* Admin Only Routes */}
+              <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+                <Route path="/admin-dashboard" element={<AdminDashboard />} />
               </Route>
             </Route>
             <Route path="*" element={<Navigate to="/login" replace />} />

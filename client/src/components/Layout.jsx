@@ -220,9 +220,10 @@ const Layout = () => {
         },
     ];
 
-    const filteredNavItems = navItems.filter((item) =>
-        item.roles.includes(user?.role || "user")
-    );
+    const filteredNavItems = navItems.filter((item) => {
+        const userRole = (user?.role || "user").toLowerCase();
+        return item.roles.map(r => r.toLowerCase()).includes(userRole);
+    });
 
     return (
         <div className="flex h-screen bg-background text-content">

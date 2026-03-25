@@ -11,9 +11,10 @@ const ProtectedRoute = ({ allowedRoles }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
+  if (allowedRoles && !allowedRoles.map(r => r.toLowerCase()).includes(user.role?.toLowerCase())) {
     // Redirect to appropriate dashboard based on role
-    return <Navigate to={user.role === "admin" || user.role === "hr" ? "/hr-dashboard" : "/dashboard"} replace />;
+    const lowRole = user.role?.toLowerCase();
+    return <Navigate to={lowRole === "admin" || lowRole === "hr" ? "/hr-dashboard" : "/dashboard"} replace />;
   }
 
   return <Outlet />;

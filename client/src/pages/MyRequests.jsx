@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import api from "../utils/api";
 import { FileText, Clock, XCircle, Search, Eye } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import toast from "react-hot-toast";
 
 const MyRequests = () => {
     const [requests, setRequests] = useState([]);
@@ -23,148 +24,142 @@ const MyRequests = () => {
         fetchRequests();
     }, []);
 
-    if (loading) return <div>Loading requests...</div>;
+    if (loading) return (
+        <div className="flex items-center justify-center h-[60vh]">
+            <div className="animate-pulse text-slate-400 font-bold uppercase tracking-widest text-xs">Loading Archive...</div>
+        </div>
+    );
 
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            className="p-4 md:p-8 space-y-8"
         >
-            <div className="flex flex-col mb-8">
-                <h1 className="text-3xl font-black text-slate-900 tracking-tight">My Archive</h1>
-                <p className="text-slate-500 font-medium mt-1">Manage and track your submitted requests.</p>
+            <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-4">
+                <div>
+                    <h1 className="text-4xl font-black text-slate-800 tracking-tight font-display">My <span className="text-primary">Archive</span></h1>
+                    <p className="text-slate-500 font-medium mt-1">Manage and track your submitted authorization requests.</p>
+                </div>
             </div>
 
-            <div className="card p-0 overflow-hidden bg-white/60">
-                <table className="min-w-full divide-y divide-slate-100">
-                    <thead className="bg-slate-50/80">
-                        <tr>
-                            <th className="px-6 py-5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">ID</th>
-                            <th className="px-6 py-5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">Request Details</th>
-                            <th className="px-6 py-5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">Category</th>
-                            <th className="px-6 py-5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">Deadline</th>
-                            <th className="px-6 py-5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">Status</th>
-                            <th className="px-6 py-5 text-center text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">View</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-slate-50">
-                        {requests.map((req) => (
-                            <tr key={req._id} className="hover:bg-slate-50/50 transition-colors duration-300">
-                                <td className="px-6 py-5 whitespace-nowrap text-[11px] font-bold text-slate-400">#{req._id.slice(-6)}</td>
-                                <td className="px-6 py-5 whitespace-nowrap text-sm font-bold text-slate-800">{req.title}</td>
-                                <td className="px-6 py-5 whitespace-nowrap">
-                                    <span className="text-[11px] font-black text-primary border border-primary/10 bg-primary/5 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                                        {req.type}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-5 whitespace-nowrap">
-                                    <div className="flex items-center gap-2 text-slate-500">
-                                        <Clock size={14} className="text-slate-300" />
-                                        <span className="text-sm font-medium">{new Date(req.dueDate).toLocaleDateString()}</span>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`badge ${req.status === 'approved' ? 'badge-success' :
-                                        req.status === 'rejected' ? 'badge-danger' :
-                                            req.status === 'in-review' ? 'badge-info' :
-                                                'badge-warning'
+            <div className="bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
+                <div className="overflow-x-auto w-full">
+                    <table className="w-full text-left border-collapse min-w-[800px]">
+                        <thead>
+                            <tr className="bg-slate-50/50 border-b border-slate-100">
+                                <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Request ID</th>
+                                <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Details</th>
+                                <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Category</th>
+                                <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Deadline</th>
+                                <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Status</th>
+                                <th className="px-8 py-6 text-center text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">View</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-50">
+                            {requests.map((req) => (
+                                <tr key={req._id} className="hover:bg-slate-50/50 transition-colors group">
+                                    <td className="px-8 py-6 whitespace-nowrap text-[11px] font-bold text-slate-400">#{req._id.slice(-6).toUpperCase()}</td>
+                                    <td className="px-8 py-6 whitespace-nowrap">
+                                        <p className="font-bold text-slate-800 text-sm group-hover:text-primary transition-colors">{req.title}</p>
+                                    </td>
+                                    <td className="px-8 py-6 whitespace-nowrap">
+                                        <span className="text-[10px] font-black text-primary bg-primary/10 px-3 py-1 rounded-lg uppercase tracking-wider">
+                                            {req.type}
+                                        </span>
+                                    </td>
+                                    <td className="px-8 py-6 whitespace-nowrap">
+                                        <div className="flex items-center gap-2 text-slate-500 font-medium text-sm">
+                                            <Clock size={14} className="text-slate-300" />
+                                            {new Date(req.dueDate).toLocaleDateString()}
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-6 whitespace-nowrap">
+                                        <span className={`inline-flex px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                                            req.status === 'approved' ? 'bg-emerald-100 text-emerald-600' :
+                                            req.status === 'rejected' ? 'bg-rose-100 text-rose-600' :
+                                            'bg-amber-100 text-amber-600'
                                         }`}>
-                                        {req.status}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-5 whitespace-nowrap text-center text-sm">
-                                    <button 
-                                        onClick={() => { setSelectedRequest(req); setIsModalOpen(true); }}
-                                        className="p-2 text-primary hover:bg-primary/5 rounded-lg transition-colors"
-                                        title="View Details"
-                                    >
-                                        <Eye size={18} strokeWidth={2.5} />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                        {requests.length === 0 && (
-                            <tr>
-                                <td colSpan="6" className="px-6 py-4 text-center text-gray-500 py-12">
-                                    <div className="flex flex-col items-center justify-center">
-                                        <FileText size={48} className="text-gray-300 mb-2" />
-                                        <p>No requests found.</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+                                            {req.status}
+                                        </span>
+                                    </td>
+                                    <td className="px-8 py-6 text-center">
+                                        <button 
+                                            onClick={() => { setSelectedRequest(req); setIsModalOpen(true); }}
+                                            className="p-3 text-slate-400 hover:bg-primary/10 hover:text-primary rounded-xl transition-all"
+                                        >
+                                            <Eye size={20} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                            {requests.length === 0 && (
+                                <tr>
+                                    <td colSpan="6" className="px-8 py-20 text-center">
+                                        <div className="flex flex-col items-center gap-4">
+                                            <div className="w-16 h-16 bg-slate-100 rounded-3xl flex items-center justify-center text-slate-300">
+                                                <FileText size={32} />
+                                            </div>
+                                            <p className="text-slate-400 font-bold text-sm tracking-widest uppercase">No requests found.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {/* View Details Modal */}
-            {isModalOpen && selectedRequest && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-300">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        className="bg-white rounded-[2rem] shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-100"
-                    >
-                        {/* Header */}
-                        <div className="bg-slate-50 p-8 border-b border-slate-100 flex justify-between items-start">
-                            <div>
-                                <div className="flex items-center gap-3 mb-2">
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Request Details</span>
-                                    <span className={`badge ${selectedRequest.status === 'approved' ? 'badge-success' :
-                                        selectedRequest.status === 'rejected' ? 'badge-danger' :
-                                            selectedRequest.status === 'in-review' ? 'badge-info' :
-                                                'badge-warning'
-                                        }`}>
-                                        {selectedRequest.status}
-                                    </span>
+            <AnimatePresence>
+                {isModalOpen && selectedRequest && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="bg-white rounded-[3rem] shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-100"
+                        >
+                            <div className="p-8 md:p-12 space-y-8">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-3">Authorization Request</p>
+                                        <h2 className="text-3xl font-black text-slate-800 leading-tight">{selectedRequest.title}</h2>
+                                    </div>
+                                    <button onClick={() => setIsModalOpen(false)} className="w-12 h-12 flex items-center justify-center bg-slate-100 text-slate-400 hover:bg-rose-50 hover:text-rose-500 rounded-2xl transition-all">
+                                        <XCircle size={24} />
+                                    </button>
                                 </div>
-                                <h2 className="text-3xl font-black font-display text-slate-900 leading-tight">{selectedRequest.title}</h2>
-                            </div>
-                            <button onClick={() => setIsModalOpen(false)} className="p-3 hover:bg-slate-200/50 rounded-full transition-colors text-slate-400 hover:text-slate-600">
-                                <XCircle size={24} />
-                            </button>
-                        </div>
 
-                        {/* Content */}
-                        <div className="p-8 space-y-8 max-h-[60vh] overflow-y-auto">
-                            <div className="grid grid-cols-2 gap-8">
-                                <div>
-                                    <p className="label">Category</p>
-                                    <span className="text-[11px] font-black text-primary border border-primary/10 bg-primary/5 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                                        {selectedRequest.type}
-                                    </span>
-                                </div>
-                                <div>
-                                    <p className="label">Deadline</p>
-                                    <div className="flex items-center gap-2 text-slate-500">
-                                        <Clock size={16} className="text-slate-300" />
-                                        <span className="text-sm font-bold text-slate-800">{new Date(selectedRequest.dueDate).toLocaleDateString()}</span>
+                                <div className="grid grid-cols-2 gap-6 bg-slate-50/50 p-8 rounded-[2rem] border border-slate-100">
+                                    <div>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Category</p>
+                                        <p className="font-bold text-slate-800">{selectedRequest.type}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Due Date</p>
+                                        <p className="font-bold text-slate-800">{new Date(selectedRequest.dueDate).toLocaleDateString()}</p>
                                     </div>
                                 </div>
-                            </div>
 
-                            {/* Description */}
-                            <div>
-                                <p className="label">Detailed Description</p>
-                                <div className="bg-slate-50/50 rounded-2xl p-6 border border-slate-100 italic text-slate-600 leading-relaxed font-medium">
-                                    "{selectedRequest.description}"
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4 ml-1">Case Description</p>
+                                    <div className="bg-slate-50/30 rounded-[2rem] p-8 border border-slate-100 italic text-slate-600 leading-relaxed font-medium">
+                                        "{selectedRequest.description}"
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        {/* Footer */}
-                        <div className="p-8 bg-slate-50 border-t border-slate-100 flex justify-end">
-                            <button
-                                onClick={() => setIsModalOpen(false)}
-                                className="btn btn-primary"
-                            >
-                                Close View
-                            </button>
-                        </div>
-                    </motion.div>
-                </div>
-            )}
+                                <button
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="w-full py-5 bg-slate-800 text-white rounded-3xl font-black tracking-widest uppercase text-xs shadow-xl shadow-slate-800/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                >
+                                    Close View
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </motion.div>
     );
 };

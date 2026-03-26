@@ -7,7 +7,7 @@ const { sendToN8n } = require("../utils/n8nUtils");
 // Create a new request
 exports.createRequest = async (req, res) => {
     try {
-        let { title, description, type, dueDate } = req.body;
+        let { title, description, type, dueDate, priority } = req.body;
 
         // Basic validation (dueDate is now optional/defaulted)
         if (!title || !description || !type) {
@@ -32,6 +32,7 @@ exports.createRequest = async (req, res) => {
             description,
             type,
             dueDate,
+            priority,
             department: req.user.department || "Unassigned",
             submittedBy: req.user.userId,
             attachment: attachmentPath

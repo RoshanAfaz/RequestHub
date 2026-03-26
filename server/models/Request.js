@@ -9,10 +9,15 @@ const requestSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    priority: {
+        type: String,
+        enum: ["Low", "Medium", "High"],
+        default: "Medium",
+    },
     type: {
         type: String,
         required: true,
-        enum: ["Leave", "Purchase", "IT Support", "Travel", "Maintenance", "Other"],
+        enum: ["Leave", "Purchase", "Resource", "IT Support", "Travel", "Maintenance", "Other"],
     },
     dueDate: {
         type: Date,

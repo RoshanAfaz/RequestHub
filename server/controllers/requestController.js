@@ -7,11 +7,18 @@ const { sendToN8n } = require("../utils/n8nUtils");
 // Create a new request
 exports.createRequest = async (req, res) => {
     try {
-        const { title, description, type, dueDate } = req.body;
+        let { title, description, type, dueDate } = req.body;
 
-        // Basic validation
-        if (!title || !description || !type || !dueDate) {
+        // Basic validation (dueDate is now optional/defaulted)
+        if (!title || !description || !type) {
             return res.status(400).json({ message: "Please fill in all fields" });
+        }
+
+        // Default dueDate to 7 days from now if not provided
+        if (!dueDate) {
+            const date = new Date();
+            date.setDate(date.getDate() + 7);
+            dueDate = date;
         }
 
         // Handle file attachment

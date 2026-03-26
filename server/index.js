@@ -17,7 +17,8 @@ const app = express();
 const server = http.createServer(app);
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://request-hub-ten.vercel.app"
+  "https://request-hub-ten.vercel.app",
+  "https://requesthubb.vercel.app"
 ];
 
 const io = new Server(server, {

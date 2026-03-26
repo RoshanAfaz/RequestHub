@@ -294,46 +294,74 @@ const Layout = () => {
                 </header>
 
                 {/* Mobile Sidebar Overlay */}
-                {isSidebarOpen && (
-                    <div className="fixed inset-0 bg-black/50 z-20 md:hidden" onClick={() => setIsSidebarOpen(false)}>
-                        <div className="absolute top-0 left-0 w-64 h-full bg-white shadow-xl p-4 flex flex-col" onClick={e => e.stopPropagation()}>
-                            <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-xl font-bold text-primary">Menu</h2>
-                                <button onClick={() => setIsSidebarOpen(false)}><X size={24} /></button>
-                            </div>
-                            <nav className="flex-1 space-y-2">
-                                {filteredNavItems.map((item) => (
-                                    <Link
-                                        key={item.path}
-                                        to={item.path}
+                <AnimatePresence>
+                    {isSidebarOpen && (
+                        <>
+                            <motion.div 
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                onClick={() => setIsSidebarOpen(false)}
+                                className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 md:hidden"
+                            />
+                            <motion.div 
+                                initial={{ x: "-100%" }}
+                                animate={{ x: 0 }}
+                                exit={{ x: "-100%" }}
+                                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                                className="fixed top-0 left-0 bottom-0 w-80 bg-white shadow-2xl z-50 md:hidden flex flex-col"
+                            >
+                                <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-primary/5">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-black text-sm">R</div>
+                                        <h2 className="text-xl font-black text-slate-800 tracking-tight">Request<span className="text-primary">Hub</span></h2>
+                                    </div>
+                                    <button 
                                         onClick={() => setIsSidebarOpen(false)}
-                                        className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${location.pathname === item.path
-                                            ? "bg-primary/10 text-primary font-medium"
-                                            : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                                            }`}
+                                        className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400 hover:text-slate-900"
                                     >
-                                        {item.icon}
-                                        {item.label}
-                                    </Link>
-                                ))}
-                            </nav>
-                            <div className="border-t border-gray-100 pt-4 mt-4">
-                                <div className="flex items-center gap-3 px-2 mb-4">
-                                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
-                                        {user?.name?.[0]?.toUpperCase() || "U"}
-                                    </div>
-                                    <div>
-                                        <p className="text-sm font-medium text-gray-900">{user?.name}</p>
-                                        <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
-                                    </div>
+                                        <X size={24} />
+                                    </button>
                                 </div>
-                                <button onClick={logout} className="flex items-center gap-3 px-2 w-full text-red-600">
-                                    <LogOut size={18} /> Logout
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
+
+                                <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+                                    {filteredNavItems.map((item) => (
+                                        <Link
+                                            key={item.path}
+                                            to={item.path}
+                                            onClick={() => setIsSidebarOpen(false)}
+                                            className={`flex items-center gap-4 px-5 py-4 rounded-xl transition-all duration-300 ${location.pathname === item.path
+                                                ? "bg-primary text-white shadow-lg shadow-primary/25 font-bold"
+                                                : "text-slate-600 hover:bg-slate-50 font-medium"
+                                                }`}
+                                        >
+                                            {item.icon}
+                                            <span className="tracking-tight">{item.label}</span>
+                                        </Link>
+                                    ))}
+                                </nav>
+
+                                <div className="p-6 border-t border-slate-100 bg-slate-50/50">
+                                    <div className="flex items-center gap-4 px-2 mb-6">
+                                        <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-bold shadow-inner border border-primary/5">
+                                            {user?.name?.[0]?.toUpperCase() || "U"}
+                                        </div>
+                                        <div className="overflow-hidden">
+                                            <p className="text-sm font-bold text-slate-900 truncate">{user?.name}</p>
+                                            <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-0.5">{user?.role}</p>
+                                        </div>
+                                    </div>
+                                    <button 
+                                        onClick={logout} 
+                                        className="flex items-center justify-center gap-3 px-4 py-3.5 w-full bg-red-50 text-red-600 hover:bg-red-500 hover:text-white rounded-2xl transition-all duration-500 text-xs font-black tracking-widest uppercase border border-red-100"
+                                    >
+                                        <LogOut size={16} strokeWidth={3} /> Logout
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </>
+                    )}
+                </AnimatePresence>
 
                 {/* Main Content Area */}
                 <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background p-4 md:p-8">

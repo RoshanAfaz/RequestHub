@@ -255,8 +255,9 @@ const HRDashboard = () => {
             </div>
 
             {/* Table */}
-            <div className="card p-0 overflow-hidden bg-white/60 border-slate-100">
-                <table className="min-w-full divide-y divide-slate-100">
+            <div className="card p-0 overflow-hidden bg-white/60 border-slate-100 flex flex-col">
+                <div className="overflow-x-auto w-full">
+                    <table className="min-w-full divide-y divide-slate-100">
                     <thead className="bg-slate-50/80">
                         <tr>
                             <th className="px-6 py-5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">ID</th>
@@ -327,7 +328,8 @@ const HRDashboard = () => {
                             })
                         )}
                     </tbody>
-                </table>
+                    </table>
+                </div>
             </div>
 
             {/* View Details Modal */}

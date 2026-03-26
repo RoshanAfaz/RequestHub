@@ -84,66 +84,68 @@ const AdminDashboard = () => {
                 </div>
             </div>
 
-            <div className="bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden">
-                <table className="w-full">
-                    <thead>
-                        <tr className="bg-slate-50/50 border-b border-slate-100">
-                            <th className="px-8 py-6 text-left text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">User Profile</th>
-                            <th className="px-8 py-6 text-left text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Department</th>
-                            <th className="px-8 py-6 text-left text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Access Level</th>
-                            <th className="px-8 py-6 text-center text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-50">
-                        {filteredUsers.map((user) => (
-                            <tr key={user._id} className="hover:bg-slate-50/50 transition-colors group">
-                                <td className="px-8 py-6">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 font-bold">
-                                            {user.name[0]}
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-slate-800 text-sm">{user.name}</p>
-                                            <p className="text-xs text-slate-500">{user.email}</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td className="px-8 py-6">
-                                    <span className="text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-lg">
-                                        {user.department}
-                                    </span>
-                                </td>
-                                <td className="px-8 py-6">
-                                    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                                        user.role === 'admin' ? 'bg-slate-800 text-white' :
-                                        user.role === 'hr' ? 'bg-primary/10 text-primary' :
-                                        'bg-slate-100 text-slate-500'
-                                    }`}>
-                                        {user.role === 'admin' && <Shield size={12} />}
-                                        {user.role === 'hr' && <UserCheck size={12} />}
-                                        {user.role}
-                                    </span>
-                                </td>
-                                <td className="px-8 py-6 text-center">
-                                    {user.role !== 'admin' ? (
-                                        <button 
-                                            onClick={() => updateRole(user._id, user.role)}
-                                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                                                user.role === 'hr' 
-                                                ? 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white' 
-                                                : 'bg-primary/10 text-primary hover:bg-primary hover:text-white shadow-lg shadow-primary/20'
-                                            }`}
-                                        >
-                                            {user.role === 'hr' ? 'Demote to User' : 'Promote to HR'}
-                                        </button>
-                                    ) : (
-                                        <span className="text-slate-300 text-xs italic font-medium">Protected Admin</span>
-                                    )}
-                                </td>
+            <div className="bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden flex flex-col">
+                <div className="overflow-x-auto w-full">
+                    <table className="min-w-full">
+                        <thead>
+                            <tr className="bg-slate-50/50 border-b border-slate-100">
+                                <th className="px-8 py-6 text-left text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">User Profile</th>
+                                <th className="px-8 py-6 text-left text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Department</th>
+                                <th className="px-8 py-6 text-left text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Access Level</th>
+                                <th className="px-8 py-6 text-center text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Actions</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="divide-y divide-slate-50">
+                            {filteredUsers.map((user) => (
+                                <tr key={user._id} className="hover:bg-slate-50/50 transition-colors group">
+                                    <td className="px-8 py-6 whitespace-nowrap">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 font-bold uppercase shadow-inner">
+                                                {user.name[0]}
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-slate-800 text-sm leading-tight">{user.name}</p>
+                                                <p className="text-xs text-slate-500">{user.email}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-6 whitespace-nowrap">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200/50">
+                                            {user.department || "No Dept"}
+                                        </span>
+                                    </td>
+                                    <td className="px-8 py-6 whitespace-nowrap">
+                                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                                            user.role === 'admin' ? 'bg-slate-800 text-white' :
+                                            user.role === 'hr' ? 'bg-primary/10 text-primary' :
+                                            'bg-slate-100 text-slate-500'
+                                        }`}>
+                                            {user.role === 'admin' && <Shield size={12} />}
+                                            {user.role === 'hr' && <UserCheck size={12} />}
+                                            {user.role}
+                                        </span>
+                                    </td>
+                                    <td className="px-8 py-6 text-center whitespace-nowrap">
+                                        {user.role !== 'admin' ? (
+                                            <button 
+                                                onClick={() => updateRole(user._id, user.role)}
+                                                className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                                                    user.role === 'hr' 
+                                                    ? 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white border border-red-100' 
+                                                    : 'bg-primary/10 text-primary hover:bg-primary hover:text-white shadow-lg shadow-primary/20 border border-primary/10'
+                                                }`}
+                                            >
+                                                {user.role === 'hr' ? 'Demote User' : 'Verify HR'}
+                                            </button>
+                                        ) : (
+                                            <span className="text-slate-300 text-[10px] font-black uppercase tracking-widest italic">Protected Root</span>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </motion.div>
     );

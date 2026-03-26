@@ -11,6 +11,7 @@ const SubmitRequest = () => {
         description: "",
         type: "Leave",
         priority: "Medium",
+        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
     });
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -119,10 +120,17 @@ const SubmitRequest = () => {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Submission Context</label>
-                            <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
-                                <Calendar size={18} className="text-slate-400" />
-                                <span className="text-[11px] font-bold text-slate-500 italic">Auto-timestamped @ {new Date().toLocaleDateString()}</span>
+                            <label className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Target Deadline</label>
+                            <div className="relative group">
+                                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" size={18} />
+                                <input
+                                    type="date"
+                                    name="dueDate"
+                                    required
+                                    value={formData.dueDate}
+                                    onChange={handleChange}
+                                    className="w-full pl-12 pr-4 py-4 md:py-5 bg-slate-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-primary/20 transition-all outline-none font-bold text-slate-700 cursor-pointer"
+                                />
                             </div>
                         </div>
                     </div>

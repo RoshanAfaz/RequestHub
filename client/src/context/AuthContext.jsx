@@ -34,20 +34,20 @@ export const AuthProvider = ({ children }) => {
             setUser(res.data.user);
             localStorage.setItem("token", res.data.token);
             localStorage.setItem("user", JSON.stringify(res.data.user));
-            return { success: true, user: res.data.user };
+            return res.data.user;
         } catch (error) {
             console.error("Login failed:", error);
-            return { success: false, message: error.response?.data?.message || "Login failed" };
+            throw error; // Throw so that UI try/catch works!
         }
     };
 
-    const register = async (name, email, password, role, department) => {
+    const register = async (userData) => {
         try {
-            await api.post("/auth/register", { name, email, password, role, department });
-            return { success: true };
+            const res = await api.post("/auth/register", userData);
+            return res.data;
         } catch (error) {
             console.error("Registration failed:", error);
-            return { success: false, message: error.response?.data?.message || "Registration failed" };
+            throw error; // Throw so that UI try/catch works!
         }
     };
 

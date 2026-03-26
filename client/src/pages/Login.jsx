@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -8,17 +8,34 @@ import { Mail, Lock, LogIn, Loader2 } from "lucide-react";
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const { login } = useContext(AuthContext);
+    const { login, user } = useContext(AuthContext);
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (user) {
+            const role = user.role?.toLowerCase();
+            if (role === "admin" || role === "hr") {
+                navigate("/hr-dashboard");
+            } else {
+                navigate("/dashboard");
+            }
+        }
+    }, [user, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
-            await login(email, password);
+            const loggedInUser = await login(email, password);
             toast.success("Welcome back!");
-            navigate("/dashboard");
+            
+            const role = loggedInUser.role?.toLowerCase();
+            if (role === "admin" || role === "hr") {
+                navigate("/hr-dashboard");
+            } else {
+                navigate("/dashboard");
+            }
         } catch (err) {
             toast.error(err.response?.data?.message || "Invalid credentials. Please try again.");
             setLoading(false);

@@ -1,5 +1,6 @@
 import { useState, useContext, useEffect, useCallback, useRef } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import api from "../utils/api";
 import { AuthContext } from "../context/AuthContext";
 import { SocketContext } from "../context/SocketContext";

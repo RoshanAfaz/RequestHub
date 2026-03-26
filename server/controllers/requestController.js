@@ -68,14 +68,15 @@ exports.createRequest = async (req, res) => {
 
         // Send to n8n for Automation (Mails, Slack, etc.)
         try {
+            const userDetails = await User.findById(req.user.userId);
             await sendToN8n({
                 event: "request.created",
                 request: newRequest,
                 user: {
-                    id: req.user.userId,
-                    name: req.user.name,
-                    email: req.user.email,
-                    department: req.user.department
+                    name: userDetails?.name || req.user.name,
+                    email: userDetails?.email || req.user.email,
+                    role: userDetails?.role || req.user.role || "User",
+                    department: userDetails?.department || "Unassigned"
                 }
             });
         } catch (err) {
